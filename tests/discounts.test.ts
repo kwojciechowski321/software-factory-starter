@@ -9,6 +9,18 @@ describe("lookupDiscount", () => {
   it("rejects an unknown code", () => {
     expect(() => lookupDiscount("FREE")).toThrow(DiscountError);
   });
+
+  it("ignores letter case", () => {
+    expect(lookupDiscount("save10")).toEqual({ kind: "percent", percent: 10 });
+  });
+
+  it("ignores leading and trailing whitespace", () => {
+    expect(lookupDiscount(" Save10 ")).toEqual({ kind: "percent", percent: 10 });
+  });
+
+  it("still rejects an unknown code after normalising it", () => {
+    expect(() => lookupDiscount(" save99 ")).toThrow(DiscountError);
+  });
 });
 
 describe("discountAmount", () => {
