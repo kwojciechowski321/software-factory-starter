@@ -17,6 +17,13 @@ describe("computeInvoice", () => {
   });
 
   it("spreads a percentage discount across lines before VAT", () => {
+    const totals = computeInvoice([book, laptop], "SAVE10");
+    expect(totals.discount).toBe(36000);
+    expect(totals.net).toBe(323998);
+    expect(totals.total).toBe(totals.net + totals.vat);
+  });
+
+  it("pins the exact totals for a percentage discount", () => {
     expect(computeInvoice([book, laptop], "SAVE10")).toEqual({
       subtotal: 359998,
       discount: 36000,
