@@ -22,6 +22,12 @@ describe("computeInvoice", () => {
     expect(totals.total).toBe(totals.net + totals.vat);
   });
 
+  it("treats a discount code in any letter case or with surrounding spaces as the same code", () => {
+    const expected = computeInvoice([book, laptop], "SAVE10");
+    expect(computeInvoice([book, laptop], "save10")).toEqual(expected);
+    expect(computeInvoice([book, laptop], " Save10 ")).toEqual(expected);
+  });
+
   it("caps a fixed discount at the subtotal", () => {
     const cheap: InvoiceLine = { sku: "PEN", quantity: 1, unitPrice: 500, vatRate: 0.23 };
     expect(computeInvoice([cheap], "MINUS20")).toMatchObject({ discount: 500, net: 0, vat: 0, total: 0 });
