@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DiscountError } from "../src/discounts.ts";
 import { computeInvoice, InvoiceError, type InvoiceLine } from "../src/invoice.ts";
 
 const book: InvoiceLine = { sku: "BOOK", quantity: 2, unitPrice: 4999, vatRate: 0.05 };
@@ -16,10 +17,17 @@ describe("computeInvoice", () => {
   });
 
   it("spreads a percentage discount across lines before VAT", () => {
-    const totals = computeInvoice([book, laptop], "SAVE10");
-    expect(totals.discount).toBe(36000);
-    expect(totals.net).toBe(323998);
-    expect(totals.total).toBe(totals.net + totals.vat);
+    expect(computeInvoice([book, laptop], "SAVE10")).toEqual({
+      subtotal: 359998,
+      discount: 36000,
+      net: 323998,
+      vat: 72900,
+      total: 396898,
+    });
+  });
+
+  it("rejects an unknown discount code", () => {
+    expect(() => computeInvoice([book, laptop], "SAVE99")).toThrow(DiscountError);
   });
 
   it("treats a discount code in any letter case or with surrounding spaces as the same code", () => {
